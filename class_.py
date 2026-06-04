@@ -1,4 +1,8 @@
 from __future__ import annotations
+
+import re
+import string
+
 from assignment import Assignment
 from school import School
 from term import Term
@@ -8,58 +12,152 @@ from utilities import CyclicalError
 class Class:
     """class representing a single Class that a user takes in school."""
 
-    dept: str
-    number: int
-    short_desc: str
-    description: str
-    grade: str = ''
-    hrs: int
-    term: Term
-    school: School
-    tags: list[str]
-    ongoing: bool = False
-    assignments: list[Assignment]
-    assign_cats: list[str]
-    prereqs: list[Class]
-    postreqs: list[Class]
+    _dept: str
+    _number: int
+    _short_desc: str
+    _description: str
+    _grade: str = ''
+    _hrs: int
+    _term: Term
+    _school: School
+    _tags: list[str]
+    _ongoing: bool = False
+    _assignments: list[Assignment]
+    _assign_cats: list[str]
+    _prereqs: list[Class]
+    _postreqs: list[Class]
 
-    def __init__(self, dept: str, number: int, hrs: int, term: Term, school: School, *,
-                 tags: list[str], ongoing: bool=False, grade: str='', short_desc: str='', description: str=''):
+    grade_pattern = re.compile('[A-Z][+-]?')
+
+    def __init__(
+        self, dept: str, number: int, hrs: int, term: Term, school: School, *,
+        tags: list[str], ongoing: bool = False, grade: str = '', short_desc: str = '', description: str = '',
+    ):
         self.number = number
         self.dept = dept
-        self.grade = grade[:3]
+        self.grade = grade[:2]
         self.hrs = hrs
         self.school = school
         if tags:
-            self.tags = tags
+            self._tags = tags
         else:
-            self.tags = []
+            self._tags = []
         self.ongoing = ongoing
         if grade:
             self.grade = grade
-        self.assignments = []
-        self.assign_cats = []
-        self.prereqs = []
-        self.postreqs = []
+        self._assignments = []
+        self._assign_cats = []
+        self._prereqs = []
+        self._postreqs = []
         self.term = term
         self.short_desc = short_desc
         self.description = description
 
+    @property
+    def dept(self) -> str:
+        return self._dept
+
+    @dept.setter
+    def dept(self, value: str) -> None:
+        if type(value) is not str or value == '':
+            raise ValueError('Class.dept must be a non-empty string')
+        self._dept = value
+
+    @property
+    def number(self) -> int:
+        return self._number
+
+    @number.setter
+    def number(self, value: int) -> None:
+        if type(value) is not int:
+            raise ValueError('Class.number must be an int')
+        self._number = value
+
+    @property
+    def short_desc(self) -> str:
+        return self._short_desc
+
+    @short_desc.setter
+    def short_desc(self, value: str) -> None:
+        if type(value) is not str:
+            raise ValueError('Class.short_desc must be a string')
+        self._short_desc = value
+
+    @property
+    def description(self) -> str:
+        return self._description
+
+    @description.setter
+    def description(self, value: str) -> None:
+        if type(value) is not str:
+            raise ValueError('Class.description must be a string')
+        self._description = value
+
+    @property
+    def grade(self) -> str:
+        return self._grade
+
+    @grade.setter
+    def grade(self, value: str) -> None:
+        if type(value) is not str or not re.match(Class.grade_pattern, value):
+            raise ValueError(f'Class.grade must be a string of format "{Class.grade_pattern.pattern}"')
+        self._grade = value[:2]
+
+    @property
+    def hrs(self) -> int:
+        return self._hrs
+
+    @hrs.setter
+    def hrs(self, value: int) -> None:
+        if type(value) is not int:
+            raise ValueError('Class.hrs must be an int')
+        self._hrs = value
+
+    @property
+    def term(self) -> Term:
+        return self._term
+
+    @term.setter
+    def term(self, value: Term) -> None:
+        if type(value) is not Term:
+            raise ValueError('Class.term must be a Term')
+        self._term = value
+
+    @property
+    def school(self) -> School:
+        return self._school
+
+    @school.setter
+    def school(self, value: School) -> None:
+        if type(value) is not School:
+            raise ValueError('Class.school must be a School')
+        self._school = value
+
+    @property
+    def ongoing(self) -> bool:
+        return self._ongoing
+
+    @ongoing.setter
+    def ongoing(self, value: bool) -> None:
+        if type(value) is not bool:
+            raise ValueError('Class.ongoing must be a bool')
+        self._ongoing = value
+
     def add_prereq(self, c: Class) -> None:
         """Adds a Class as a prerequisite of this Class, i.e., the added Class must be taken before this Class"""
 
-        if c in self.postreqs:
+        if c in self._postreqs:
             raise CyclicalError('Cannot add a class to the prerequisites that is already a postrequisite')
         else:
-            self.prereqs.append(c)
+            self._prereqs.append(c)
 
     def add_postreq(self, c: Class) -> None:
         """Adds a Class as a postrequisite of this Class, i.e., the added Class must be taken after this Class"""
 
-        if c in self.prereqs:
+        if c in self._prereqs:
             raise CyclicalError('Cannot add a class to the postrequisites that is already a prerequisite')
         else:
-            self.postreqs.append(c)
+            self._postreqs.append(c)
 
     def term_sort_key(self) -> tuple[Term, str, int]:
         return self.term, self.dept, self.number

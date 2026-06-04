@@ -4,7 +4,8 @@ from math import isnan
 class Assignment:
     """class representing a single school assignment.
 
-    Has a name, number, category, points earned, points out of, and belongs to a Class."""
+    Has a name, number, category, points earned, points out of, and belongs to a Class.
+    """
     _name: str
     _number: int
     _category: str

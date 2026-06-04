@@ -4,8 +4,7 @@ default_terms = ['Winter', 'Spring', 'Summer', 'Fall']
 
 
 class Term:
-    """Unit corresponding to a single term of school instruction, e.g. semester or quarter
-    """
+    """Unit corresponding to a single term of school instruction, for example, a semester or quarter."""
 
     _name: str           # e.g. 'quarter', 'semester', etc.
     _year: int
@@ -15,48 +14,67 @@ class Term:
     term_names = default_terms
 
     def __init__(self, name: str, year: int, part_of_year: str):
-        self.set_name(name)
-        self.set_year(year)
-        self.set_part_of_year(part_of_year)
+        self.name = name
+        self.year = year
+        self.part_of_year = part_of_year
 
-    def set_name(self, name: str):
+    @property
+    def name(self) -> str:
+        return self._name
+
+    @name.setter
+    def name(self, name: str):
         if name == '':
             raise ValueError('Name cannot be blank')
         self._name = name
 
-    def get_name(self) -> str:
-        return self._name
+    @property
+    def year(self) -> int:
+        return self._year
 
-    def set_year(self, year: int):
+    @year.setter
+    def year(self, year: int):
         if year < 0:
             raise ValueError('Year must be non-negative integer')
         self._year = year
 
-    def get_year(self) -> int:
-        return self._year
+    @property
+    def part_of_year(self) -> str:
+        return self._part_of_year
 
-    def set_part_of_year(self, part_of_year: str):
+    @part_of_year.setter
+    def part_of_year(self, part_of_year: str):
         self._part_of_year = part_of_year
         self._part_of_year_index = Term.term_names.index(self._part_of_year)
 
-    def get_part_of_year(self) -> str:
-        return self._part_of_year
+    @property
+    def part_of_year_index(self):
+        return self._part_of_year_index
 
-    def short_str(self) -> str:
-        return f'{self._part_of_year[:2]}{self._year%100:2d}'
+    def __str__(self) -> str:
+        """Converts the term into a very brief string.
 
-    def __lt__(self, other: Term):
-        """Compares by year first, then part of year. If both self & other's part_of_year are in Term.term_names list,
-        will compare by those indices (when years are even). Otherwise, defaults to lexicographic ordering.
+        Capitalizes the first 2 letters of part_of_year, then takes year % 100, and combines them.
+        For example, Term('Semester', 2009, 'Spring') becomes 'SP09'
+        :returns max 4 character string as described above"""
+        return f'{self.part_of_year[:2].upper()}{self.year%100:02d}'
+
+    def __lt__(self, other: Term) -> bool:
+        """Compares by year first, then part of year.
+
+        If both self and other's part_of_year_index are -1, it will compare by those indices (when years are even).
+        Otherwise, defaults to lexicographic ordering of the string value of part_of_year.
+        :returns bool result of comparison
         """
 
-        if self._year == other._year:
-            if self._part_of_year_index != -1 and other._part_of_year_index != -1:
-                return self._part_of_year_index < other._part_of_year_index
+        if self.year == other.year:
+            if self.part_of_year_index != -1 and other.part_of_year_index != -1:
+                return self.part_of_year_index < other.part_of_year_index
             else:
-                return self._part_of_year < other._part_of_year
+                return self.part_of_year < other._part_of_year
         else:
-            return self._year < other._year
+            return self.year < other.year
 
-    def __str__(self):
-        return f'{self._part_of_year} {self._year:4d}'
+    def __repr__(self) -> str:
+        """Returns a string of the format 'part_of_year year' with year always 4 digits."""
+        return f'{self.part_of_year} {self.year:04d}'

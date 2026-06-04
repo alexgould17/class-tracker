@@ -85,11 +85,11 @@ class Student:
                 return False
             if include:
                 for tag in include:
-                    if tag not in c.tags:
+                    if tag not in c._tags:
                         return False
             if exclude:
                 for tag in exclude:
-                    if tag in c.tags:
+                    if tag in c._tags:
                         return False
             return True
         return self.calculate_gpa(filter_func)
