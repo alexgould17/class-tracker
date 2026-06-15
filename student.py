@@ -1,4 +1,4 @@
-from class_ import Class
+from school_class import Class
 from school import School
 from collections.abc import Callable
 
