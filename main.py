@@ -1,13 +1,13 @@
 from school import School
 from student import Student
 from school_class import Class
-from term import default_terms, Term
+from term import DEFAULT_PARTS_OF_YEAR, Term
 
 # GPA calculations for me
 old, new, tech, major = 'old', 'new', 'technical', 'major'
 uiuc = School('UIUC', short_name='Illinois', pretty_name='University of Illinois at Urbana-Champaign')
 parkland = School('Parkland', short_name='Parkland', pretty_name='Parkland College')
-wi, sp, su, fa = default_terms
+wi, sp, su, fa = DEFAULT_PARTS_OF_YEAR
 sem = 'Semester'
 fa07 = Term(sem, 2007, fa)
 sp08, fa08 = Term(sem, 2008, sp), Term(sem, 2008, fa)

@@ -31,7 +31,7 @@ class Assignment:
         purposes, the value of points_earned may exceed this value.
 
     Raises:
-        ValueError on any attribute assignment (including during initialization) that violates the above conditions
+        ValueError on any attribute assignment (including during initialization) that violates the above conditions.
     """
     _name: str
     _number: int

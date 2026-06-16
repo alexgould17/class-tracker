@@ -30,6 +30,9 @@ class Class:
         assign_cats: List of categories of Assignments for this Class. For example: ['HW', 'Quiz', 'Lab']
         prereqs: List of Classes that must be taken before this Class can be taken. Will be refactored out to different logic eventually.
         postreqs: List of Classes that this Class is a potential prerequisite for. Will be refactored out to different logic eventually.
+
+    Raises:
+        ValueError on any attribute assignment (including during initialization) that violates the above conditions.
     """
 
     _dept: str
