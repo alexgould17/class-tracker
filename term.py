@@ -1,3 +1,4 @@
+"""Module containing Term class and its default values."""
 from __future__ import annotations
 
 DEFAULT_PARTS_OF_YEAR = ['Winter', 'Spring', 'Summer', 'Fall']
