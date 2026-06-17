@@ -1,95 +1,145 @@
-from class_ import Class
+from school_class import Class
 from school import School
 from collections.abc import Callable
 
-grade_points = {
-    'A+': 4.,   'A': 4.,    'A-': 3.67,
-    'B+': 3.33, 'B': 3.,    'B-': 2.67,
-    'C+': 2.33, 'C': 2.,    'C-': 1.67,
-    'D+': 1.33, 'D': 1.,    'D-': 0.67,
-    'F': 0
-}
-
 
 class Student:
-    """Class representing a single student attending school.
+    """class representing a single Student attending school.
 
-    Current school is mandatory, everything else is optional (and intended for college/university vs. high school and lower)
+    Attributes:
+        classes: A list of Class instances the Student has taken, is taking, or will take.
+        current_school: A School instance representing the school the Student currently attends.
+        major: A string holding the Student's current major.
+        program: A string holding the Student's current program of study.
+    
+    Raises:
+        ValueError on any attribute assignment (including during initialization) that violates the above conditions.
     """
     _classes: list[Class]
-    _school: School
-    _major: str = ''
-    _program: str = ''
+    _current_school: School
+    _major: str | None
+    _program: str | None
 
-    def __init__(self, school: School, *, major: str='', program: str= ''):
-        """Creates a new Student.
+    def __init__(self, current_school: School, major: str | None = None, program: str | None = None):
+        """Creates a new Student instance.
 
-        :param school string representing the name (short) of the school the Student currently attends
-        :param major optional string representing the Student's major or field of study
-        :param program optional string representing the Student's current instructional program or degree track
+        Minimum attributes needed to correctly initialize: current_school.
         """
-        self._classes = []
-        self._school = school
-        self._major = major
-        self._program = program
+        self.classes = []
+        self.current_school = current_school
+        self.major = major
+        self.program = program
+
+    @property
+    def classes(self) -> list[Class]:
+        return self._classes
+
+    @classes.setter
+    def classes(self, value: list[Class]):
+        if type(value) is not list:
+            raise ValueError('School.classes must be a list.')
+        for s in value:
+            if type(s) is not str:
+                raise ValueError('School.classes must be a list of strings.')
+        self._classes = value
+
+    @property
+    def current_school(self) -> School:
+        return self._current_school
+
+    @current_school.setter
+    def current_school(self, value: School):
+        if type(value) is not School:
+            raise ValueError('School.current_school must be a School instance.')
+        self._current_school = value
+
+    @property
+    def major(self) -> str | None:
+        return self._major
+
+    @major.setter
+    def major(self, value: str):
+        if type(value) is not str and type(value) is not None:
+            raise ValueError('School.major must be a string or None.')
+        self._major = value
+
+    @property
+    def program(self) -> str | None:
+        return self._program
+
+    @program.setter
+    def program(self, value: str):
+        if type(value) is not str and type(value) is not None:
+            raise ValueError('School.program must be a string or None.')
+        self._program = value
 
     def add_class(self, new_class: Class):
-        """Adds a single class to the list of classes the Student has taken"""
-        self._classes.append(new_class)
+        """Adds a single class to the list of classes the Student has taken."""
+        if type(new_class) is not Class:
+            raise ValueError('Can only add a Class instance to School.classes.')
+        self.classes.append(new_class)
 
-    def add_classes(self, class_list: list[Class]):
-        """Adds a list of new classes to the Student's classes list"""
-        for c in class_list:
+    def add_classes(self, new_classes: list[Class]):
+        """Adds a list of new classes to the Student's classes list."""
+        if type(new_classes) is not list:
+            raise ValueError('Can only add Class instances to School.classes.')
+        for c in new_classes:
+            if type(c) is not Class:
+                raise ValueError('Can only add a Class instance to School.classes.')
             self.add_class(c)
 
-    def calculate_gpa(self, filter_f: Callable[[Class], bool]=None) -> tuple[float, list[Class]]:
+    def calculate_gpa(self, filter_func: Callable[[Class], bool]=None) -> tuple[float, list[Class]]:
         """Calculates the Student's grade point average for all classes currently added.
 
-        :param filter_f function that evaluates to False for any classes to skip, True for all to include in GPA calculation
+        Args:
+            filter_func: function that evaluates to False for any classes to skip, True for all to include in GPA calculation.
 
-        :returns gpa as a float, list of classes not used in calculations
+        Returns:
+            A tuple containing gpa as an unrounded float, a list of classes not used in calculations
         """
         total_grade_pts, total_credit_hrs, not_calcd = 0.0, 0, []
-        for c in self._classes:
-            if filter_f:
-                if not filter_f(c):
-                    not_calcd.append(c)
+        for cls in self._classes:
+            if filter_func:
+                if not filter_func(cls):
+                    not_calcd.append(cls)
                     continue
-            if c.grade in grade_points.keys():
-                total_credit_hrs += c.hrs
-                total_grade_pts += c.hrs * grade_points[c.grade]
+            if cls.grade in self.current_school.grade_pts:
+                total_credit_hrs += cls.hrs
+                total_grade_pts += cls.hrs * self.current_school.grade_pts[cls.grade]
             else:
-                not_calcd.append(c)
+                not_calcd.append(cls)
         return total_grade_pts / total_credit_hrs, not_calcd
 
     def calculate_total_gpa(self) -> tuple[float, list[Class]]:
-        """Calculates the Student's GPA excluding ongoing classes"""
+        """Calculates the Student's GPA excluding ongoing classes."""
         return self.calculate_gpa(lambda c: not c.ongoing)
 
     def calculate_predicted_gpa(self) -> tuple[float, list[Class]]:
-        """Calculates the Student's GPA including ongoing classes"""
+        """Calculates the Student's GPA including ongoing classes."""
         return self.calculate_gpa()
 
     def calculate_filtered_gpa(self, *, include: list[str] | None, exclude: list[str] | None, use_ongoing: bool=False)\
             -> tuple[float, list[Class]]:
         """Calculates the Student's GPA using a custom filter
 
-        :param include optional list of strings that each class must have all of in its tags to be included in calculations
-        :param exclude optional list of strings that each class must have none of in its tags to be included in calculations
-        :param use_ongoing boolean signifying whether ongoing classes should be used in calculations or not
+        Args:
+            include: An optional list of strings that each class must have all of in its tags to be included in calculations.
+            exclude: An optional list of strings that each class must have none of in its tags to be included in calculations.
+            use_ongoing: A boolean signifying whether ongoing classes should be used in calculations or not.
 
-        :returns same as calculate_gpa()
+        Returns:
+            A tuple containing gpa as an unrounded float, a list of classes not used in calculations.
         """
-        def filter_func(c: Class):
+        def filter_func(c: Class) -> bool:
             if c.ongoing and not use_ongoing:
                 return False
             if include:
                 for tag in include:
-                    if tag not in c._tags:
+                    if tag not in c.tags:
                         return False
             if exclude:
                 for tag in exclude:
-                    if tag in c._tags:
+                    if tag in c.tags:
                         return False
             return True
         return self.calculate_gpa(filter_func)
