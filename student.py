@@ -88,7 +88,7 @@ class Student:
                 raise ValueError('Can only add a Class instance to School.classes.')
             self.add_class(c)
 
-    def calculate_gpa(self, filter_func: Callable[[Class], bool]=None) -> tuple[float, list[Class]]:
+    def calculate_gpa(self, filter_func: Callable[[Class], bool] = None) -> tuple[float, list[Class]]:
         """Calculates the Student's grade point average for all classes currently added.
 
         Args:
@@ -97,6 +97,8 @@ class Student:
         Returns:
             A tuple containing gpa as an unrounded float, a list of classes not used in calculations
         """
+        if not callable(filter_func) and filter_func is not None:
+            raise ValueError('filter_func for calculate_gpa() must be callable or None.')
         total_grade_pts, total_credit_hrs, not_calcd = 0.0, 0, []
         for cls in self._classes:
             if filter_func:
@@ -118,7 +120,7 @@ class Student:
         """Calculates the Student's GPA including ongoing classes."""
         return self.calculate_gpa()
 
-    def calculate_filtered_gpa(self, *, include: list[str] | None, exclude: list[str] | None, use_ongoing: bool=False)\
+    def calculate_filtered_gpa(self, *, include: list[str] | None, exclude: list[str] | None, use_ongoing: bool = False)\
             -> tuple[float, list[Class]]:
         """Calculates the Student's GPA using a custom filter
 
