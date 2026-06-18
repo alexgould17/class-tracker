@@ -11,16 +11,22 @@ class Student:
         current_school: A School instance representing the school the Student currently attends.
         major: A string holding the Student's current major.
         program: A string holding the Student's current program of study.
-    
+
     Raises:
         ValueError on any attribute assignment (including during initialization) that violates the above conditions.
     """
+
     _classes: list[Class]
     _current_school: School
     _major: str | None
     _program: str | None
 
-    def __init__(self, current_school: School, major: str | None = None, program: str | None = None):
+    def __init__(
+        self,
+        current_school: School,
+        major: str | None = None,
+        program: str | None = None,
+    ) -> None:
         """Creates a new Student instance.
 
         Minimum attributes needed to correctly initialize: current_school.
@@ -35,7 +41,7 @@ class Student:
         return self._classes
 
     @classes.setter
-    def classes(self, value: list[Class]):
+    def classes(self, value: list[Class]) -> None:
         if type(value) is not list:
             raise ValueError('School.classes must be a list.')
         for s in value:
@@ -88,7 +94,9 @@ class Student:
                 raise ValueError('Can only add a Class instance to School.classes.')
             self.add_class(c)
 
-    def calculate_gpa(self, filter_func: Callable[[Class], bool] = None) -> tuple[float, list[Class]]:
+    def calculate_gpa(
+        self, filter_func: Callable[[Class], bool] = None
+    ) -> tuple[float, list[Class]]:
         """Calculates the Student's grade point average for all classes currently added.
 
         Args:
@@ -98,7 +106,9 @@ class Student:
             A tuple containing gpa as an unrounded float, a list of classes not used in calculations
         """
         if not callable(filter_func) and filter_func is not None:
-            raise ValueError('filter_func for calculate_gpa() must be callable or None.')
+            raise ValueError(
+                'filter_func for calculate_gpa() must be callable or None.'
+            )
         total_grade_pts, total_credit_hrs, not_calcd = 0.0, 0, []
         for cls in self._classes:
             if filter_func:
@@ -120,8 +130,13 @@ class Student:
         """Calculates the Student's GPA including ongoing classes."""
         return self.calculate_gpa()
 
-    def calculate_filtered_gpa(self, *, include: list[str] | None, exclude: list[str] | None, use_ongoing: bool = False)\
-            -> tuple[float, list[Class]]:
+    def calculate_filtered_gpa(
+        self,
+        *,
+        include: list[str] | None,
+        exclude: list[str] | None,
+        use_ongoing: bool = False,
+    ) -> tuple[float, list[Class]]:
         """Calculates the Student's GPA using a custom filter
 
         Args:
@@ -132,6 +147,7 @@ class Student:
         Returns:
             A tuple containing gpa as an unrounded float, a list of classes not used in calculations.
         """
+
         def filter_func(c: Class) -> bool:
             if c.ongoing and not use_ongoing:
                 return False
@@ -144,4 +160,5 @@ class Student:
                     if tag in c.tags:
                         return False
             return True
+
         return self.calculate_gpa(filter_func)

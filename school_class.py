@@ -1,4 +1,5 @@
 """Module containing the Class class, which represents a class taken at school."""
+
 from __future__ import annotations
 
 import re
@@ -53,8 +54,18 @@ class Class:
     grade_pattern = re.compile('[A-Z][+-]?')
 
     def __init__(
-        self, dept: str, number: int, hrs: int, term: Term, school: School, *,
-        tags: list[str] | None, ongoing: bool = False, grade: str = '', short_desc: str = '', description: str = '',
+        self,
+        dept: str,
+        number: int,
+        hrs: int,
+        term: Term,
+        school: School,
+        *,
+        tags: list[str] | None,
+        ongoing: bool = False,
+        grade: str = '',
+        short_desc: str = '',
+        description: str = '',
     ):
         """Initializes a new Class object including generating empty lists for appropriate attributes.
 
@@ -127,10 +138,12 @@ class Class:
     @grade.setter
     def grade(self, value: str) -> None:
         if type(value) is not str or not re.match(Class.grade_pattern, value):
-            raise ValueError(f'Class.grade must be a string of format "{Class.grade_pattern.pattern}"')
+            raise ValueError(
+                f'Class.grade must be a string of format "{Class.grade_pattern.pattern}"'
+            )
         self._grade = value[:2]
         if value != 'I':
-            self.ongoing = False # If we have a letter grade (except 'I' for incomplete), the class is not ongoing.
+            self.ongoing = False  # If we have a letter grade (except 'I' for incomplete), the class is not ongoing.
 
     @property
     def hrs(self) -> int:
@@ -240,14 +253,18 @@ class Class:
     def add_prereq(self, c: Class) -> None:
         """Adds a Class to this Class's list of prerequisites."""
         if c in self._postreqs:
-            raise CyclicalError('Cannot add a class to the prerequisites that is already a postrequisite')
+            raise CyclicalError(
+                'Cannot add a class to the prerequisites that is already a postrequisite'
+            )
         else:
             self._prereqs.append(c)
 
     def add_postreq(self, c: Class) -> None:
         """Adds a Class to this Class's list of postrequisites."""
         if c in self._prereqs:
-            raise CyclicalError('Cannot add a class to the postrequisites that is already a prerequisite')
+            raise CyclicalError(
+                'Cannot add a class to the postrequisites that is already a prerequisite'
+            )
         else:
             self._postreqs.append(c)
 
@@ -258,13 +275,24 @@ class Class:
     def to_transcript_line(self) -> str:
         """Prints the class dept, number, short_desc, hours and grade to a single-line, fixed-width string."""
         numstr = str(self.number)
-        strs = [self.dept, ' '*(5-len(self.dept)), numstr, ' '*(5-len(numstr)), self.short_desc, f'   {self.hrs:1}.00   ', self.grade, ' '*(3-len(self.grade))]
+        strs = [
+            self.dept,
+            ' ' * (5 - len(self.dept)),
+            numstr,
+            ' ' * (5 - len(numstr)),
+            self.short_desc,
+            f'   {self.hrs:1}.00   ',
+            self.grade,
+            ' ' * (3 - len(self.grade)),
+        ]
         return ''.join(strs)
 
     def __lt__(self, other: Class):
         """Default ordering for sorting. Compares by dept first, then number, then year, then semester."""
         if type(self) is not Class or type(other) is not Class:
-            raise ValueError('Class object can only be compared (<) to another Class object.')
+            raise ValueError(
+                'Class object can only be compared (<) to another Class object.'
+            )
         if self.dept != other.dept:
             return self.dept < other.dept
         elif self.number != other.number:
@@ -275,7 +303,9 @@ class Class:
     def __eq__(self, other: Class):
         """Two Classes are equal iff their dept string, class number, and term are the same."""
         if type(self) is not Class or type(other) is not Class:
-            raise ValueError('Class object can only be compared (==) to another Class object.')
+            raise ValueError(
+                'Class object can only be compared (==) to another Class object.'
+            )
         return self.dept == other.dept and self.number == other.number
 
     def __str__(self):

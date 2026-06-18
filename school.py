@@ -1,16 +1,26 @@
 """Module containing the School class and its default values."""
+
 from utilities import AlreadyExistsError
 
 MAX_SHORT_NAME_CHARS = 15
 DEFAULT_GRADE_POINTS = {
-    'A+': 4.,   'A': 4.,    'A-': 3.67,
-    'B+': 3.33, 'B': 3.,    'B-': 2.67,
-    'C+': 2.33, 'C': 2.,    'C-': 1.67,
-    'D+': 1.33, 'D': 1.,    'D-': 0.67,
-    'F': 0
+    'A+': 4.0,
+    'A': 4.0,
+    'A-': 3.67,
+    'B+': 3.33,
+    'B': 3.0,
+    'B-': 2.67,
+    'C+': 2.33,
+    'C': 2.0,
+    'C-': 1.67,
+    'D+': 1.33,
+    'D': 1.0,
+    'D-': 0.67,
+    'F': 0,
 }
 
 __school_ids = set()
+
 
 class School:
     """Represents a single School attended by a Student.
@@ -33,15 +43,21 @@ class School:
     _short_name: str
     _pretty_name: str
 
-    def __init__(self, identifier: str, short_name: str='', pretty_name: str='', grade_pts: dict[str, float] | None = None):
+    def __init__(
+        self,
+        identifier: str,
+        short_name: str = '',
+        pretty_name: str = '',
+        grade_pts: dict[str, float] | None = None,
+    ):
         self.identifier = identifier
         self.short_name = short_name
         self.pretty_name = pretty_name
-        self.grade_pts = grade_pts if grade_pts else DEFAULT_GRADE_POINTS
+        self.grade_pts = grade_pts if grade_pts else DEFAULT_GRADE_POINTS.copy()
 
     @property
     def identifier(self):
-        return  self._identifier
+        return self._identifier
 
     @identifier.setter
     def identifier(self, value: str):
@@ -83,25 +99,35 @@ class School:
             raise ValueError('School.grade_pts must be a dictionary.')
         for k, v in value.items():
             if type(k) is not str or type(v) is not float:
-                raise ValueError('Each key/value pair in School.grade_points() must be a string & a float, respectively.')
+                raise ValueError(
+                    'Each key/value pair in School.grade_points() must be a string & a float, respectively.'
+                )
         self._grade_pts = value
 
     def add_grade_points(self, grade_pts: dict[str, float]):
         """Copies all key-value pairs in the passed dictionary into the grade_pts dict."""
         if type(grade_pts) is not dict:
-            raise ValueError('The grade_pts passed to School.add_grade_points() must be a dict.')
+            raise ValueError(
+                'The grade_pts passed to School.add_grade_points() must be a dict.'
+            )
         for k, v in grade_pts.items():
             if type(k) is not str or type(v) is not float:
-                raise ValueError('Each key/value pair passed to School.add_grade_points() must be a string & a float, respectively.')
+                raise ValueError(
+                    'Each key/value pair passed to School.add_grade_points() must be a string & a float, respectively.'
+                )
             self._grade_pts[k] = v
 
     def remove_grade_points(self, grades: list[str]):
         """Removes all grades in the passed list from the grade_pts dictionary if they exist."""
         if type(grades) is not list:
-            raise ValueError('The grades passed to School.remove_grade_points() must be a list.')
+            raise ValueError(
+                'The grades passed to School.remove_grade_points() must be a list.'
+            )
         for g in grades:
             if type(g) is not str:
-                raise ValueError('Any grade removed from the School.grade_pts dict must be a string.')
+                raise ValueError(
+                    'Any grade removed from the School.grade_pts dict must be a string.'
+                )
             if g in self._grade_pts:
                 del self._grade_pts[g]
 

@@ -1,4 +1,5 @@
 """Module containing Term class and its default values."""
+
 from __future__ import annotations
 
 DEFAULT_PARTS_OF_YEAR = ['Winter', 'Spring', 'Summer', 'Fall']
@@ -20,16 +21,25 @@ class Term:
         ValueError on any attribute assignment (including during initialization) that violates the above conditions.
     """
 
-    _name: str           # e.g. 'quarter', 'semester', etc.
+    _name: str  # e.g. 'quarter', 'semester', etc.
     _year: int
     _part_of_year: str
     _part_of_year_index: int
     _part_of_year_names: list[str]
 
-    def __init__(self, name: str, year: int, part_of_year: str, *, part_of_year_names: list[str] | None = None):
+    def __init__(
+        self,
+        name: str,
+        year: int,
+        part_of_year: str,
+        *,
+        part_of_year_names: list[str] | None = None,
+    ):
         self.name = name
         self.year = year
-        self.part_of_year_names = part_of_year_names if part_of_year_names else DEFAULT_PARTS_OF_YEAR
+        self.part_of_year_names = (
+            part_of_year_names if part_of_year_names else DEFAULT_PARTS_OF_YEAR.copy()
+        )
         self.part_of_year_index = 0
         self.part_of_year = part_of_year
 
@@ -89,7 +99,7 @@ class Term:
 
     def __str__(self) -> str:
         """Returns a 4-char string: 1st 2 chars of part_of_year, capitalized + last 2 digits of year."""
-        return f'{self.part_of_year[:2].upper()}{self.year%100:02d}'
+        return f'{self.part_of_year[:2].upper()}{self.year % 100:02d}'
 
     def __repr__(self) -> str:
         """Returns a string of the format 'part_of_year year' with year always 4 digits."""
@@ -105,7 +115,9 @@ class Term:
             The boolean result of the comparison
         """
         if type(self) is not Term or type(other) is not Term:
-            raise ValueError('Term object can only be compared (<) to another Term object.')
+            raise ValueError(
+                'Term object can only be compared (<) to another Term object.'
+            )
         if self.year == other.year:
             if self.part_of_year_index != -1 and other.part_of_year_index != -1:
                 return self.part_of_year_index < other.part_of_year_index
@@ -117,5 +129,11 @@ class Term:
     def __eq__(self, other: Term) -> bool:
         """Two terms are equal iff their names, years & part_of_years are equal"""
         if type(self) is not Term or type(other) is not Term:
-            raise ValueError('Term object can only be compared (<) to another Term object.')
-        return self.year == other.year and self.name == other.name and self.part_of_year == other.part_of_year
+            raise ValueError(
+                'Term object can only be compared (<) to another Term object.'
+            )
+        return (
+            self.year == other.year
+            and self.name == other.name
+            and self.part_of_year == other.part_of_year
+        )
