@@ -1,5 +1,4 @@
-"""
-Design specs for grading app:
+"""Design specs for grading app:
 
 ------------ Classes ------------
 ** Student **

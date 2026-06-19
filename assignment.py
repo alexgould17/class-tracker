@@ -28,7 +28,7 @@ class Assignment:
 
     Attributes:
         name: A non-empty string representing the name of the specific assignment, for
-              example, "Acid-Base Titration"
+            example, "Acid-Base Titration"
         number: An integer representing the number assignment this is. Should be unique
             amongst categories to allow sorting to behave well, but this is unenforced
             currently. For example, if there are 6 labs in a Term, and this is the
@@ -117,7 +117,7 @@ class Assignment:
     ) -> None:
         """Create a new Assignment object based on the provided values.
 
-        Minimum required attributes for successful creation are: name, number, category.
+        Minimum required attributes for successful creation: name, number, category.
         """
         self.name = name
         self.number = number

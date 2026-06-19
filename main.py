@@ -1,6 +1,6 @@
 from school import School
-from student import Student
 from school_class import Class
+from student import Student
 from term import DEFAULT_PARTS_OF_YEAR, Term
 
 # GPA calculations for me

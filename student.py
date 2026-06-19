@@ -1,6 +1,7 @@
-from school_class import Class
-from school import School
 from collections.abc import Callable
+
+from school import School
+from school_class import Class
 
 
 class Student:
@@ -14,6 +15,7 @@ class Student:
 
     Raises:
         ValueError on any attribute assignment (including during initialization) that violates the above conditions.
+
     """
 
     _classes: list[Class]
@@ -54,7 +56,7 @@ class Student:
         return self._current_school
 
     @current_school.setter
-    def current_school(self, value: School):
+    def current_school(self, value: School) -> None:
         if type(value) is not School:
             raise ValueError('School.current_school must be a School instance.')
         self._current_school = value
@@ -64,7 +66,7 @@ class Student:
         return self._major
 
     @major.setter
-    def major(self, value: str):
+    def major(self, value: str) -> None:
         if type(value) is not str and type(value) is not None:
             raise ValueError('School.major must be a string or None.')
         self._major = value
@@ -74,18 +76,18 @@ class Student:
         return self._program
 
     @program.setter
-    def program(self, value: str):
+    def program(self, value: str) -> None:
         if type(value) is not str and type(value) is not None:
             raise ValueError('School.program must be a string or None.')
         self._program = value
 
-    def add_class(self, new_class: Class):
+    def add_class(self, new_class: Class) -> None:
         """Adds a single class to the list of classes the Student has taken."""
         if type(new_class) is not Class:
             raise ValueError('Can only add a Class instance to School.classes.')
         self.classes.append(new_class)
 
-    def add_classes(self, new_classes: list[Class]):
+    def add_classes(self, new_classes: list[Class]) -> None:
         """Adds a list of new classes to the Student's classes list."""
         if type(new_classes) is not list:
             raise ValueError('Can only add Class instances to School.classes.')
@@ -95,7 +97,7 @@ class Student:
             self.add_class(c)
 
     def calculate_gpa(
-        self, filter_func: Callable[[Class], bool] = None
+        self, filter_func: Callable[[Class], bool] | None = None
     ) -> tuple[float, list[Class]]:
         """Calculates the Student's grade point average for all classes currently added.
 
@@ -104,6 +106,7 @@ class Student:
 
         Returns:
             A tuple containing gpa as an unrounded float, a list of classes not used in calculations
+
         """
         if not callable(filter_func) and filter_func is not None:
             raise ValueError(
@@ -111,10 +114,9 @@ class Student:
             )
         total_grade_pts, total_credit_hrs, not_calcd = 0.0, 0, []
         for cls in self._classes:
-            if filter_func:
-                if not filter_func(cls):
-                    not_calcd.append(cls)
-                    continue
+            if filter_func and not filter_func(cls):
+                not_calcd.append(cls)
+                continue
             if cls.grade in self.current_school.grade_pts:
                 total_credit_hrs += cls.hrs
                 total_grade_pts += cls.hrs * self.current_school.grade_pts[cls.grade]
@@ -137,7 +139,7 @@ class Student:
         exclude: list[str] | None,
         use_ongoing: bool = False,
     ) -> tuple[float, list[Class]]:
-        """Calculates the Student's GPA using a custom filter
+        """Calculates the Student's GPA using a custom filter.
 
         Args:
             include: An optional list of strings that each class must have all of in its tags to be included in calculations.
@@ -146,6 +148,7 @@ class Student:
 
         Returns:
             A tuple containing gpa as an unrounded float, a list of classes not used in calculations.
+
         """
 
         def filter_func(c: Class) -> bool:

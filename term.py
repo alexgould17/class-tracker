@@ -19,6 +19,7 @@ class Term:
 
     Raises:
         ValueError on any attribute assignment (including during initialization) that violates the above conditions.
+
     """
 
     _name: str  # e.g. 'quarter', 'semester', etc.
@@ -34,7 +35,7 @@ class Term:
         part_of_year: str,
         *,
         part_of_year_names: list[str] | None = None,
-    ):
+    ) -> None:
         self.name = name
         self.year = year
         self.part_of_year_names = (
@@ -48,7 +49,7 @@ class Term:
         return self._name
 
     @name.setter
-    def name(self, value: str):
+    def name(self, value: str) -> None:
         if type(value) is not str or value == '':
             raise ValueError('Term.name must be a non-empty string.')
         self._name = value
@@ -58,7 +59,7 @@ class Term:
         return self._year
 
     @year.setter
-    def year(self, value: int):
+    def year(self, value: int) -> None:
         if type(value) is not int or value < 0:
             raise ValueError('Term.year must be a non-negative integer.')
         self._year = value
@@ -68,7 +69,7 @@ class Term:
         return self._part_of_year
 
     @part_of_year.setter
-    def part_of_year(self, value: str):
+    def part_of_year(self, value: str) -> None:
         if type(value) is not str or value == '':
             raise ValueError('Term.part_of_year must be a non-empty string.')
         self._part_of_year = value
@@ -79,7 +80,7 @@ class Term:
         return self._part_of_year_index
 
     @part_of_year_index.setter
-    def part_of_year_index(self, value: int):
+    def part_of_year_index(self, value: int) -> None:
         if type(value) is not int or value < 0:
             raise ValueError('Term.part_of_year_index must be an integer.')
         self._part_of_year_index = value
@@ -89,7 +90,7 @@ class Term:
         return self._part_of_year_names
 
     @part_of_year_names.setter
-    def part_of_year_names(self, value: list[str]):
+    def part_of_year_names(self, value: list[str]) -> None:
         if type(value) is not list or not value:
             raise ValueError('Term.term_names must be a non-empty list.')
         for s in value:
@@ -113,6 +114,7 @@ class Term:
 
         Returns:
             The boolean result of the comparison
+
         """
         if type(self) is not Term or type(other) is not Term:
             raise ValueError(
@@ -121,13 +123,11 @@ class Term:
         if self.year == other.year:
             if self.part_of_year_index != -1 and other.part_of_year_index != -1:
                 return self.part_of_year_index < other.part_of_year_index
-            else:
-                return self.part_of_year < other._part_of_year
-        else:
-            return self.year < other.year
+            return self.part_of_year < other._part_of_year
+        return self.year < other.year
 
     def __eq__(self, other: Term) -> bool:
-        """Two terms are equal iff their names, years & part_of_years are equal"""
+        """Two terms are equal iff their names, years & part_of_years are equal."""
         if type(self) is not Term or type(other) is not Term:
             raise ValueError(
                 'Term object can only be compared (<) to another Term object.'
