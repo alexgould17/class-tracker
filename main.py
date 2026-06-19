@@ -1,3 +1,4 @@
+"""Entrypoint for the app. Currently hardcoded with my personal data."""
 from school import School
 from school_class import Class
 from student import Student

@@ -8,17 +8,29 @@ DEFAULT_PARTS_OF_YEAR = ['Winter', 'Spring', 'Summer', 'Fall']
 class Term:
     """Unit corresponding to a single term of school instruction.
 
-    Only one instance should be created to represent each term at each School. Each instance should be reused for as many Classes as are taken that Term. Highly recommended to build the part_of_year_names list and pass it to the constructor if not using the module default for the best ordering (list should go earliest -> latest).
+    Only one instance should be created to represent each term at each School. Each
+    instance should be reused for as many Classes as are taken that Term. Highly
+    recommended to build the part_of_year_names list and pass it to the constructor if
+    not using the module default for the best ordering (list should go earliest ->
+    latest).
 
     Attributes:
-        name: A non-empty string containing the name for a single unit of a Term. For example: 'semester' or 'quarter'.
-        year: A non-negative integer containing the year the term started. For example: 2026.
-        part_of_year: A non-empty string containing the part of the year or season the Term started. For example: 'Spring'
-        part_of_year_index: An index of where the part_of_year occurs in the term_names list, automatically set when the part_of_names is set
-        part_of_year_names: A list of strings representing all the possible Term names. Ideally, this should be the same list object for every instance of a Term at a specific School, and every part_of_year string should exist in this list for easy ordering.
+        name: A non-empty string containing the name for a single unit of a Term. For
+            example, 'semester' or 'quarter'.
+        year: A non-negative integer containing the year the term started. For example,
+            2026.
+        part_of_year: A non-empty string containing the part of the year or season the
+            Term started. For example, 'Spring'.
+        part_of_year_index: An index of where the part_of_year occurs in the term_names
+            list, automatically set when the part_of_names is set.
+        part_of_year_names: A list of strings representing all the possible Term names.
+            Ideally, this should be the same list object for every instance of a Term at
+            a specific School, and every part_of_year string should exist in this list
+            for easy ordering.
 
     Raises:
-        ValueError on any attribute assignment (including during initialization) that violates the above conditions.
+        ValueError on any attribute assignment (including during initialization) that
+        violates the above conditions.
 
     """
 
@@ -36,6 +48,10 @@ class Term:
         *,
         part_of_year_names: list[str] | None = None,
     ) -> None:
+        """Create a new Term instance.
+
+        Minimum required attributes for successful creation: name, year, part_of_year.
+        """
         self.name = name
         self.year = year
         self.part_of_year_names = (
@@ -73,10 +89,10 @@ class Term:
         if type(value) is not str or value == '':
             raise ValueError('Term.part_of_year must be a non-empty string.')
         self._part_of_year = value
-        self._part_of_year_index = Term.part_of_year_names.index(self._part_of_year)
+        self._part_of_year_index = self._part_of_year_names.index(self._part_of_year)
 
     @property
-    def part_of_year_index(self):
+    def part_of_year_index(self) -> int:
         return self._part_of_year_index
 
     @part_of_year_index.setter
@@ -86,7 +102,7 @@ class Term:
         self._part_of_year_index = value
 
     @property
-    def part_of_year_names(self):
+    def part_of_year_names(self) -> list[str]:
         return self._part_of_year_names
 
     @part_of_year_names.setter
@@ -99,22 +115,22 @@ class Term:
         self._part_of_year_names = value
 
     def __str__(self) -> str:
-        """Returns a 4-char string: 1st 2 chars of part_of_year, capitalized + last 2 digits of year."""
+        """Return the term as a 4-char string.
+
+        1st 2 chars of part_of_year, capitalized, then the last 2 digits of year.
+        """
         return f'{self.part_of_year[:2].upper()}{self.year % 100:02d}'
 
     def __repr__(self) -> str:
-        """Returns a string of the format 'part_of_year year' with year always 4 digits."""
+        """Return a string of the format 'part_of_year year', year always 4 digits."""
         return f'{self.part_of_year} {self.year:04d}'
 
     def __lt__(self, other: Term) -> bool:
-        """Compares by year first, then part of year.
+        """Compare by year first, then part of year.
 
-        If both self and other's part_of_year_index are not -1, it will compare by those indices (when years are even).
-        Otherwise, defaults to lexicographic ordering of the string value of part_of_year.
-
-        Returns:
-            The boolean result of the comparison
-
+        If both self and other's part_of_year_index are not -1, it will compare by those
+        indices (when years are even). Otherwise, defaults to lexicographic ordering of
+        the string value of part_of_year.
         """
         if type(self) is not Term or type(other) is not Term:
             raise ValueError(
