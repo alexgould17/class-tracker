@@ -1,4 +1,5 @@
 """Module containing the Class class, which represents a class taken at school."""
+
 from __future__ import annotations
 
 import re
@@ -13,26 +14,43 @@ class Class:
     """class representing a single Class that a user takes in school.
 
     Attributes:
-        dept: A string representing the department, college, etc. a Class belongs to. For example: 'English'.
-        number: An integer representing the class number, mostly relevant for college/university classes. For example: 101.
-        short_desc: A short (truncated at 25 chars) string containing a brief description of the Class. For example: 'Intro to American Lit.'.
-        description: A longer (not truncated) string allowing for a neater description of the Class. For example: 'Introduction to American Literature'.
-        grade: A two-character string that represents the letter grade achieved in this class. Existence of a letter grade implies a completed Class. The first
-        character should be the letter, always capital. The second, optional character, must be either a '+' or a '-'. For example: 'A-' or 'I'.
-        hrs: An integer indicating the number of credit hours obtained from a class. Should be 1 if all classes at an institution count for the same credit
-        per term.
-        term: A Term object representing when the Class was taken. Enables sorting and grouping. For example: Term('semester', 2026, 'Spring')
-        school: A School object representing the institution the Class was taken at. For example: School('UIUC')
-        tags: A list of strings used to filter and categorize Classes. Can be empty at any point. The primary use for tags is for calculating different
-        GPA's or program/degree requirements. For example: adding the tag 'major' to certain classes but not others will allow you to easily calculate your major GPA.
-        ongoing: A boolean indicating whether the Class is currently ongoing/in progress or not. Gets set to False when a letter grade is assigned.
+        dept: A string representing the department, college, etc. a Class belongs to.
+            For example, 'English'.
+        number: An integer representing the class number, mostly relevant for college/
+            university classes. For example, 101.
+        short_desc: A short (truncated at 25 chars) string containing a brief
+            description of the Class. For example, 'Intro to American Lit.'.
+        description: A longer (not truncated) string allowing for a neater description
+            of the Class. For example, 'Introduction to American Literature'.
+        grade: A two-character string that represents the letter grade achieved in this
+            class. Existence of a letter grade implies a completed Class. The first
+            character should be the letter, always capital. The second, optional
+            character must be either a '+' or a '-'. For example, 'A-' or 'I'.
+        hrs: An integer indicating the number of credit hours obtained from a class.
+            Should be 1 if all classes at an institution count for the same credit
+            per term.
+        term: A Term object representing when the Class was taken. Enables sorting and
+            grouping. For example, Term('semester', 2026, 'Spring')
+        school: A School object representing the institution the Class was taken at. For
+            example, School('UIUC')
+        tags: A list of strings used to filter and categorize Classes. Can be empty at
+            any point. The primary use for tags is for calculating different GPA's or
+            program/degree requirements. For example, adding the tag 'major' to certain
+            classes but not others will allow you to easily calculate your major GPA.
+        ongoing: A boolean indicating whether the Class is currently ongoing/in progress
+            or not. Gets set to False when a letter grade is assigned.
         assignments: List of Assignment objects belonging to this Class.
-        assign_cats: List of categories of Assignments for this Class. For example: ['HW', 'Quiz', 'Lab']
-        prereqs: List of Classes that must be taken before this Class can be taken. Will be refactored out to different logic eventually.
-        postreqs: List of Classes that this Class is a potential prerequisite for. Will be refactored out to different logic eventually.
+        assign_cats: List of categories of Assignments for this Class. For example,
+            ['HW', 'Quiz', 'Lab']
+        prereqs: List of Classes that must be taken before this Class can be taken.
+            Will be refactored out to different logic eventually.
+        postreqs: List of Classes that this Class is a potential prerequisite for.
+            Will be refactored out to different logic eventually.
 
     Raises:
-        ValueError on any attribute assignment (including during initialization) that violates the above conditions.
+        ValueError on any attribute assignment (including during initialization) that
+        violates the above conditions.
+
     """
 
     _dept: str
@@ -53,25 +71,32 @@ class Class:
     grade_pattern = re.compile('[A-Z][+-]?')
 
     def __init__(
-        self, dept: str, number: int, hrs: int, term: Term, school: School, *,
-        tags: list[str] | None, ongoing: bool = False, grade: str = '', short_desc: str = '', description: str = '',
-    ):
-        """Initializes a new Class object including generating empty lists for appropriate attributes.
+        self,
+        dept: str,
+        number: int,
+        hrs: int,
+        term: Term,
+        school: School,
+        *,
+        tags: list[str] | None,
+        ongoing: bool = False,
+        grade: str = '',
+        short_desc: str = '',
+        description: str = '',
+    ) -> None:
+        """Create a new Class object.
 
-        Minimum attributes needed to correctly initialize: dept, number, hrs, term, school.
+        Minimum required attributes for successful creation:: dept, number, hrs, term,
+        school.
         """
         self.number = number
         self.dept = dept
         self.grade = grade
         self.hrs = hrs
         self.school = school
-        if tags:
-            self.tags = tags
-        else:
-            self.tags = []
+        self.tags = tags if tags else []
         self.ongoing = ongoing
-        if grade:
-            self.grade = grade
+        self.grade = grade
         self.assignments = []
         self.assign_cats = []
         self.prereqs = []
@@ -126,11 +151,16 @@ class Class:
 
     @grade.setter
     def grade(self, value: str) -> None:
-        if type(value) is not str or not re.match(Class.grade_pattern, value):
-            raise ValueError(f'Class.grade must be a string of format "{Class.grade_pattern.pattern}"')
+        if type(value) is not str or not re.match(self.grade_pattern, value):
+            raise ValueError(
+                f'Class.grade must be a string of format "{self.grade_pattern.pattern}"'
+            )
         self._grade = value[:2]
+
+        # If we have a letter grade (except 'I' for incomplete),
+        # the class is not ongoing.
         if value != 'I':
-            self.ongoing = False # If we have a letter grade (except 'I' for incomplete), the class is not ongoing.
+            self.ongoing = False
 
     @property
     def hrs(self) -> int:
@@ -238,50 +268,67 @@ class Class:
         self._postreqs = value
 
     def add_prereq(self, c: Class) -> None:
-        """Adds a Class to this Class's list of prerequisites."""
+        """Add a Class to this Class's list of prerequisites."""
         if c in self._postreqs:
-            raise CyclicalError('Cannot add a class to the prerequisites that is already a postrequisite')
-        else:
-            self._prereqs.append(c)
+            raise CyclicalError(
+                'Cannot add a class to the prerequisites '
+                'that is already a postrequisite.'
+            )
+        self._prereqs.append(c)
 
     def add_postreq(self, c: Class) -> None:
-        """Adds a Class to this Class's list of postrequisites."""
+        """Add a Class to this Class's list of postrequisites."""
         if c in self._prereqs:
-            raise CyclicalError('Cannot add a class to the postrequisites that is already a prerequisite')
-        else:
-            self._postreqs.append(c)
+            raise CyclicalError(
+                'Cannot add a class to the postrequisites '
+                'that is already a prerequisite.'
+            )
+        self._postreqs.append(c)
 
     def term_sort_key(self) -> tuple[Term, str, int]:
-        """Returns a tuple of term, dept, number for use with sorting."""
+        """Return a tuple of term, dept, number for use with sorting."""
         return self.term, self.dept, self.number
 
     def to_transcript_line(self) -> str:
-        """Prints the class dept, number, short_desc, hours and grade to a single-line, fixed-width string."""
+        """Print the Class details to a single-line, fixed-width (40 char) string."""
         numstr = str(self.number)
-        strs = [self.dept, ' '*(5-len(self.dept)), numstr, ' '*(5-len(numstr)), self.short_desc, f'   {self.hrs:1}.00   ', self.grade, ' '*(3-len(self.grade))]
+        strs = [
+            self.dept,
+            ' ' * (5 - len(self.dept)),
+            numstr,
+            ' ' * (5 - len(numstr)),
+            self.short_desc,
+            ' ' * (15 - len(self.short_desc)),
+            f'   {self.hrs:1}.00   ',
+            self.grade,
+            ' ' * (5 - len(self.grade)),
+        ]
         return ''.join(strs)
 
-    def __lt__(self, other: Class):
-        """Default ordering for sorting. Compares by dept first, then number, then year, then semester."""
+    def __lt__(self, other: Class) -> bool:
+        """Compare by dept first, then number, then year, then semester."""
         if type(self) is not Class or type(other) is not Class:
-            raise ValueError('Class object can only be compared (<) to another Class object.')
+            raise ValueError(
+                'Class object can only be compared (<) to another Class object.'
+            )
         if self.dept != other.dept:
             return self.dept < other.dept
-        elif self.number != other.number:
+        if self.number != other.number:
             return self.number < other.number
-        else:
-            return self.term < other.term
+        return self.term < other.term
 
-    def __eq__(self, other: Class):
-        """Two Classes are equal iff their dept string, class number, and term are the same."""
+    def __eq__(self, other: Class) -> bool:
+        """Two Classes are equal iff their dept, number, and term are the same."""
         if type(self) is not Class or type(other) is not Class:
-            raise ValueError('Class object can only be compared (==) to another Class object.')
+            raise ValueError(
+                'Class object can only be compared (==) to another Class object.'
+            )
         return self.dept == other.dept and self.number == other.number
 
-    def __str__(self):
-        """Returns a simple string with the dept and number"""
+    def __str__(self) -> str:
+        """Return a simple string with the dept and number."""
         return f'{self.dept} {self.number}'
 
-    def __repr__(self):
-        """Returns a slightly more detailed string with the dept, number & short_desc"""
+    def __repr__(self) -> str:
+        """Return a slightly more detailed string with the dept, number & short_desc."""
         return f'{self.dept} {self.number}: {self.short_desc}'
