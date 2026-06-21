@@ -1,4 +1,5 @@
 """Contains the Student class."""
+
 from collections.abc import Callable
 
 from school import School

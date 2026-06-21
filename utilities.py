@@ -1,4 +1,6 @@
 """Exceptions & common functions used across modules."""
+
+
 class CyclicalError(Exception):
     """Error representing a cycle in a graph that should be acyclical."""
 
