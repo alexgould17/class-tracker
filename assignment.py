@@ -1,22 +1,59 @@
-"""Module representing a school assignment and all related methods.
-
-This is a broad class that can represent anything turned in and/or taken for a grade.
-Examples include: exams, tests, quizzes, homework, projects, labs, papers, and so on. In
-addition to the Assignment class, two methods are defined to sum a sequence of
-assignments:
-- sum_assignments() sums each assignment in the sequence and returns the total
-  points_earned and total points_out_of as a tuple.
-- sum_assignments_by_category() splits all assignments in the Sequence into subSequences
-  based on their category and returns a dict mapping each category.
-present to the sum tuple produced by sum_assignment() for that category.
-
-This module is distributed under a version of the BSD 3 clause license modified to
-prohibit LLM/ML/AI training and usage. Please see the LICENSE file in this repository
-for more detailed information.
-"""
+"""Module representing a school assignment and all related methods."""
 
 from math import isnan
 from typing import Sequence
+
+
+def sum_assignments(assignments: Sequence[Assignment]) -> tuple[float, float]:
+    """Calculate the total points for each Assignment in a Sequence.
+
+    Args:
+        assignments: a Sequence of assignments to calculate the sum of
+
+    Returns:
+         A tuple with two floats: total points_earned, total points_out_of
+
+    """
+    total_earned = 0.0
+    total_out_of = 0.0
+    for assignment in assignments:
+        total_earned += assignment.points_earned
+        total_out_of += assignment.points_out_of
+    return total_earned, total_out_of
+
+
+def sum_assignments_by_category(
+    assignments: list[Assignment],
+) -> dict[str, tuple[float, float]]:
+    """Calculate the total points for each Assignment in a Sequence by category.
+
+    Args:
+        assignments: a Sequence of assignments to calculate the sum of by category.
+
+    Returns:
+         A dict mapping each distinct category string found in an assignment in the
+         Sequence to a tuple of floats of the type returned by sum_assignments().
+         For example:
+
+         {'HW':   (45.0, 50.0)
+          'Quiz': (82.5, 100.0)
+          'Lab':  (170.0, 200.0)}
+
+    """
+    # Use a dictionary to group assignments by category
+    assigns_dict = {}
+    for assign in assignments:
+        if assign.category not in assigns_dict:
+            assigns_dict[assign.category] = [assign]
+        else:
+            assigns_dict[assign.category].append(assign)
+
+    # Loop over each category & calculate the sum of all assignments in that
+    # category, then return the finished dictionary
+    sums_dict = {}
+    for category in assigns_dict:
+        sums_dict[category] = sum_assignments(assigns_dict[category])
+    return sums_dict
 
 
 class Assignment:
@@ -55,57 +92,6 @@ class Assignment:
     _points_earned: float
     _points_out_of: float
 
-    @staticmethod
-    def sum_assignments(assignments: Sequence[Assignment]) -> tuple[float, float]:
-        """Calculate the total points for each Assignment in a Sequence.
-
-        Args:
-            assignments: a Sequence of assignments to calculate the sum of
-
-        Returns:
-             A tuple with two floats: total points_earned, total points_out_of
-
-        """
-        total_earned = 0.0
-        total_out_of = 0.0
-        for assignment in assignments:
-            total_earned += assignment.points_earned
-            total_out_of += assignment.points_out_of
-        return total_earned, total_out_of
-
-    @staticmethod
-    def sum_assignments_by_category(
-        assignments: list[Assignment],
-    ) -> dict[str, tuple[float, float]]:
-        """Calculate the total points for each Assignment in a Sequence by category.
-
-        Args:
-            assignments: a Sequence of assignments to calculate the sum of by category.
-
-        Returns:
-             A dict mapping each distinct category string found in an assignment in the
-             Sequence to a tuple of floats of the type returned by sum_assignments().
-             For example:
-
-             {'HW':   (45.0, 50.0)
-              'Quiz': (82.5, 100.0)
-              'Lab':  (170.0, 200.0)}
-
-        """
-        # Use a dictionary to group assignments by category
-        assigns_dict = {}
-        for assign in assignments:
-            if assign.category not in assigns_dict:
-                assigns_dict[assign.category] = [assign]
-            else:
-                assigns_dict[assign.category].append(assign)
-
-        # Loop over each category & calculate the sum of all assignments in that
-        # category, then return the finished dictionary
-        sums_dict = {}
-        for category in assigns_dict:
-            sums_dict[category] = Assignment.sum_assignments(assigns_dict[category])
-        return sums_dict
 
     def __init__(
         self,
