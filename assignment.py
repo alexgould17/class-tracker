@@ -148,10 +148,10 @@ class Assignment:
 
     def __str__(self) -> str:
         """Return a short string of the form 'category number'."""
-        return f'{self.category} {self.number}: {self.name}'
+        return f'{self.category} {self.number}'
 
     def __repr__(self) -> str:
-        """Return a string of the form 'category #humber: name'."""
+        """Return a string of the form 'category #number: name'."""
         return f'{self.category} #{self.number}: {self.name}'
 
     @property
