@@ -119,7 +119,7 @@ class Assignment:
             ValueError if either self or other is not an Assignment object.
 
         """
-        if not isinstance(self, Assignment) and not isinstance(other, Assignment):
+        if not isinstance(other, Assignment):
             raise ValueError('Assignment cannot be compared to a non-Assignment object')
         if self.category != other.category:
             return self.category < other.category
@@ -134,7 +134,7 @@ class Assignment:
             ValueError if either self or other is not an Assignment object.
 
         """
-        if not isinstance(self, Assignment) and not isinstance(other, Assignment):
+        if not isinstance(other, Assignment):
             raise ValueError('Assignment cannot be compared to a non-Assignment object')
 
         # number compared first because integer comparisons are faster than strings,

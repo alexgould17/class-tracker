@@ -43,18 +43,39 @@ def test_assignment(assign_statics, rng) -> None:
     assert test_instance1.points_earned >= assign_points_earned_range[0]
     assert test_instance1.points_earned < assign_points_earned_range[1]
 
-    # Test magic methods
+    # Test __eq__
     assert test_instance1 == test_instance2
+    with pytest.raises(ValueError, match=r'^Assignment.*'):
+        assert test_instance1 == 1
+
+    ## Test __lt__
+    # basic
     test_instance2.number = 2
     assert test_instance1 < test_instance2
+
+    # wrong value
+    with pytest.raises(ValueError, match=r'^Assignment.*'):
+        assert test_instance1 < 1
+
+    # same number, different name
     test_instance2.number = 1
     test_instance2.name = assign_name_format.format(2)
     assert test_instance1 < test_instance2
+
+    # same name, different category
     test_instance2.name = assign_name_format.format(1)
     test_instance2.category = assign_cat_format.format(2)
     assert test_instance1 < test_instance2
-    assert isinstance(str(test_instance1), str)
-    assert isinstance(repr(test_instance1), str)
+
+    # test __str__
+    instance1_str = str(test_instance1)
+    assert isinstance(instance1_str, str)
+    assert test_instance1.category in instance1_str
+
+    # Test __repr__
+    instance1_repr = repr(test_instance1)
+    assert isinstance(instance1_repr, str)
+    assert test_instance1.name in instance1_repr
 
     ## Test improper assignments
     # name
