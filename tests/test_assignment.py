@@ -137,7 +137,7 @@ def test_sum_assignments_by_category(list_of_assignments, assign_statics) -> Non
         assign_cat_format,
         _assign_name_format,
         assign_points_out_of,
-        assign_points_earned_range,
+        _assign_points_earned_range,
     ) = assign_statics
 
     # Get a list of mock assignments & split into two lists with different categories
@@ -149,8 +149,8 @@ def test_sum_assignments_by_category(list_of_assignments, assign_statics) -> Non
 
     # Calculate the expected values
     cat1_expected_points_earned, cat2_expected_points_earned = 0.0, 0.0
-    cat1_expected_points_out_of = len(category_1) * assign_points_out_of
-    cat2_expected_points_out_of = len(category_2) * assign_points_out_of
+    cat1_expected_points_out_of = cat1_len * assign_points_out_of
+    cat2_expected_points_out_of = cat2_len * assign_points_out_of
     for instance in category_1:
         cat1_expected_points_earned += instance.points_earned
     for instance in category_2:

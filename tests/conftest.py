@@ -4,7 +4,6 @@ import secrets
 
 import numpy as np
 import pytest
-from numpy.random.mtrand import RandomState
 
 from assignment import Assignment
 

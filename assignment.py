@@ -92,7 +92,6 @@ class Assignment:
     _points_earned: float
     _points_out_of: float
 
-
     def __init__(
         self,
         name: str,
