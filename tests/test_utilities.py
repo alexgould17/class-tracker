@@ -12,9 +12,7 @@ def test_error_classes() -> None:
     cyc_error = CyclicalError('cyc test')
 
     # Test values and raising
-    assert ae_error.args[0] == 'ae test'
-    assert cyc_error.args[0] == 'cyc test'
-    with pytest.raises(AlreadyExistsError):
+    with pytest.raises(AlreadyExistsError, match='ae test'):
         raise ae_error
-    with pytest.raises(CyclicalError):
+    with pytest.raises(CyclicalError, match='cyc test'):
         raise cyc_error
