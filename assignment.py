@@ -92,7 +92,6 @@ class Assignment:
     _points_earned: float
     _points_out_of: float
 
-
     def __init__(
         self,
         name: str,
@@ -120,7 +119,7 @@ class Assignment:
             ValueError if either self or other is not an Assignment object.
 
         """
-        if type(self) is not Assignment and type(other) is not Assignment:
+        if not isinstance(other, Assignment):
             raise ValueError('Assignment cannot be compared to a non-Assignment object')
         if self.category != other.category:
             return self.category < other.category
@@ -135,7 +134,7 @@ class Assignment:
             ValueError if either self or other is not an Assignment object.
 
         """
-        if type(self) is not Assignment and type(other) is not Assignment:
+        if not isinstance(other, Assignment):
             raise ValueError('Assignment cannot be compared to a non-Assignment object')
 
         # number compared first because integer comparisons are faster than strings,
@@ -148,10 +147,10 @@ class Assignment:
 
     def __str__(self) -> str:
         """Return a short string of the form 'category number'."""
-        return f'{self.category} {self.number}: {self.name}'
+        return f'{self.category} {self.number}'
 
     def __repr__(self) -> str:
-        """Return a string of the form 'category #humber: name'."""
+        """Return a string of the form 'category #number: name'."""
         return f'{self.category} #{self.number}: {self.name}'
 
     @property
@@ -160,7 +159,7 @@ class Assignment:
 
     @name.setter
     def name(self, value: str) -> None:
-        if value == '' or type(value) is not str:
+        if not isinstance(value, str) or value == '':
             raise ValueError('Assignment.name must be a non-empty string')
         self._name = value
 
@@ -170,7 +169,7 @@ class Assignment:
 
     @number.setter
     def number(self, value: int) -> None:
-        if type(value) is not int:
+        if not isinstance(value, int):
             raise ValueError('Assignment.number must be an int')
         self._number = value
 
@@ -180,7 +179,7 @@ class Assignment:
 
     @category.setter
     def category(self, value: str) -> None:
-        if value == '' or type(value) is not str:
+        if not isinstance(value, str) or value == '':
             raise ValueError('Assignment.category must be a non-empty string')
         self._category = value
 
@@ -190,7 +189,7 @@ class Assignment:
 
     @points_earned.setter
     def points_earned(self, value: float) -> None:
-        if isnan(value) or type(value) is not float:
+        if not isinstance(value, float) or isnan(value):
             raise ValueError('Assignment.points_earned must be a non-NaN float')
         self._points_earned = value
 
@@ -200,8 +199,8 @@ class Assignment:
 
     @points_out_of.setter
     def points_out_of(self, value: float) -> None:
-        if value <= 0.0 or type(value) is not float or isnan(value):
+        if not isinstance(value, float) or isnan(value) or value <= 0.0:
             raise ValueError(
-                'Assignment.points_out_of must be a non-negative, non-NaN float'
+                'Assignment.points_out_of must be a positive, non-NaN float'
             )
         self._points_out_of = value
