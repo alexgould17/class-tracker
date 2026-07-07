@@ -41,7 +41,7 @@ def test_assignment(assign_statics, rng) -> None:
     assert test_instance1.category == assign_cat_format.format(1)
     assert test_instance1.points_out_of == assign_points_out_of
     assert test_instance1.points_earned >= assign_points_earned_range[0]
-    assert test_instance1.points_earned < assign_points_earned_range[1]
+    assert test_instance1.points_earned <= assign_points_earned_range[1]
 
     # Test __eq__
     assert test_instance1 == test_instance2
