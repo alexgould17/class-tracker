@@ -9,13 +9,26 @@ dependencies = []
 
 [dependency-groups]
 dev = [
-    "ruff>=0.15.18",
+    "ruff>=0.15.20",
 ]
 test = [
-    "numpy>=2.5.0",
+    "numpy>=2.5.1",
     "pytest>=9.1.1",
     "pytest-cov>=7.1.0",
 ]
+
+# Coverage reporting
+[tool.coverage.report]
+fail_under = 90
+show_missing = true
+skip_empty = true
+sort = "-cover"
+omit = [
+    "tests/*",
+]
+
+[tool.coverage.run]
+branch = true
 
 [tool.ruff]
 # Exclude a variety of commonly ignored directories & sample files

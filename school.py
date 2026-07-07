@@ -111,7 +111,7 @@ class School:
         if not isinstance(value, dict):
             raise ValueError('School.grade_pts must be a dictionary.')
         for k, v in value.items():
-            if not isinstance(k, str) or not isinstance(v, float):
+            if not (isinstance(k, str) and isinstance(v, float)):
                 raise ValueError(
                     'Each key/value pair in School.grade_pts must be a string '
                     '& a float, respectively.'
@@ -128,7 +128,7 @@ class School:
                 'The grade_pts passed to School.add_grade_pts() must be a dict.'
             )
         for k, v in grade_pts.items():
-            if not isinstance(k, str) or not isinstance(v, float):
+            if not (isinstance(k, str) and isinstance(v, float)):
                 raise ValueError(
                     'Each key/value pair passed to School.add_grade_pts() must be '
                     'a string & a float, respectively.'

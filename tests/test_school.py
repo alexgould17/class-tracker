@@ -77,9 +77,7 @@ def test_school(school_statics, school) -> None:
     with pytest.raises(ValueError, match=r'School\.grade_pts'):
         test_instance2.grade_pts = ''
     with pytest.raises(ValueError, match=r'School\.grade_pts'):
-        test_instance2.grade_pts = {'a', 'b'}
-    with pytest.raises(ValueError, match=r'School\.grade_pts'):
-        test_instance2.grade_pts = {1.0, 2.0}
+        test_instance2.grade_pts = {123: 'abc'}
 
     # test add_grade_points
     test_instance1.add_grade_pts({'Z-': 67.})
@@ -91,7 +89,7 @@ def test_school(school_statics, school) -> None:
         test_instance2.add_grade_pts({'a': 'b'})
 
     # test remove_grade_points
-    test_instance1.remove_grade_pts(['Z-'])
+    test_instance1.remove_grade_pts(['Z-', 'not in dict'])
     assert 'Z-' not in test_instance1.grade_pts
     assert 67. not in test_instance1.grade_pts.values()
     with pytest.raises(ValueError, match=r'School\.remove_grade_pts'):
