@@ -2,7 +2,7 @@
 
 import pytest
 
-from school import MAX_SHORT_NAME_CHARS, _school_ids, School
+from school import MAX_SHORT_NAME_CHARS, School, _school_ids
 from utilities import AlreadyExistsError
 
 
@@ -23,7 +23,7 @@ def test_school(school_statics, school) -> None:
         identifier_format.format(2),
         short_name_format.format(1),
         pretty_name_format.format(1),
-        grade_pts=grade_points
+        grade_pts=grade_points,
     )
     assert test_instance2.identifier == identifier_format.format(2)
     assert test_instance2.identifier in _school_ids
@@ -80,9 +80,9 @@ def test_school(school_statics, school) -> None:
         test_instance2.grade_pts = {123: 'abc'}
 
     # test add_grade_points
-    test_instance1.add_grade_pts({'Z-': 67.})
+    test_instance1.add_grade_pts({'Z-': 67.0})
     assert 'Z-' in test_instance1.grade_pts
-    assert test_instance1.grade_pts['Z-'] == 67.
+    assert test_instance1.grade_pts['Z-'] == 67.0
     with pytest.raises(ValueError, match=r'School\.add_grade_pts'):
         test_instance2.add_grade_pts('')
     with pytest.raises(ValueError, match=r'School\.add_grade_pts'):
@@ -91,7 +91,7 @@ def test_school(school_statics, school) -> None:
     # test remove_grade_points
     test_instance1.remove_grade_pts(['Z-', 'not in dict'])
     assert 'Z-' not in test_instance1.grade_pts
-    assert 67. not in test_instance1.grade_pts.values()
+    assert 67.0 not in test_instance1.grade_pts.values()
     with pytest.raises(ValueError, match=r'School\.remove_grade_pts'):
         test_instance2.remove_grade_pts('')
     with pytest.raises(ValueError, match=r'School\.remove_grade_pts'):

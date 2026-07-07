@@ -16,7 +16,7 @@ DEFAULT_GRADE_POINTS = {
     'D+': 1.33,
     'D': 1.0,
     'D-': 0.67,
-    'F': 0.,
+    'F': 0.0,
 }
 
 _school_ids = set()
@@ -155,8 +155,10 @@ class School:
             raise ValueError(
                 'School object can only be compared (==) to another Class object.'
             )
-        return (self._short_name == other._short_name
-                and self._pretty_name == other._pretty_name)
+        return (
+            self._short_name == other._short_name
+            and self._pretty_name == other._pretty_name
+        )
 
     def __lt__(self, other: School) -> bool:
         """Compare short_name then pretty_name lexicographically."""
