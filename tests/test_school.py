@@ -17,7 +17,7 @@ def test_school(school_statics, school) -> None:
     ) = school_statics
 
     # Get a test instance from the fixture and create a test instance here, they should
-    # be identical. Test the values of the created instance
+    # be identical except for identifier. Test the values of the created instance
     test_instance1 = school
     test_instance2 = School(
         identifier_format.format(2),
@@ -31,7 +31,9 @@ def test_school(school_statics, school) -> None:
     assert test_instance2.pretty_name == pretty_name_format.format(1)
     assert test_instance2.grade_pts == grade_points
 
-    # These two instances should currently be identical, so test __eq__
+    # Test __eq__ by setting short_name and pretty_name to be identical first
+    test_instance2.short_name = test_instance1.short_name
+    test_instance2.pretty_name = test_instance1.pretty_name
     assert test_instance1 == test_instance2
     with pytest.raises(ValueError, match=r'Class object'):
         assert test_instance1 == 1

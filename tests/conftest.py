@@ -8,6 +8,7 @@ import pytest
 
 from assignment import Assignment
 from school import DEFAULT_GRADE_POINTS, School
+from school_class import Class
 from term import DEFAULT_PARTS_OF_YEAR, Term
 
 # Static test vars, all ranges are half-open unless otherwise specified
@@ -27,8 +28,24 @@ SCHOOL_SHORT_NAME_FORMAT = 'short name {}'
 SCHOOL_PRETTY_NAME_FORMAT = 'short name {}'
 SCHOOL_GRADE_PTS = DEFAULT_GRADE_POINTS.copy()
 
+CLASS_DEPT_FORMAT = 'dept {}'
+CLASS_NUMBER_RANGE = (100, 600)
+CLASS_SHORT_DESC_FORMAT = 'short desc {}'
+CLASS_DESCRIPTION_FORMAT = 'description {}'
+CLASS_GRADES = list(DEFAULT_GRADE_POINTS.keys())
+CLASS_HRS_RANGE = (1, 5)
+CLASS_TAG_FORMAT = 'tag {}'
+
 # Initialize the random number generator with a good random seed
 RNG = np.random.default_rng(secrets.randbits(128))
+
+# Necessary to not have duplicate schools
+SCHOOL_0 = School(
+    SCHOOL_IDENTIFIER_FORMAT.format(0),
+    SCHOOL_SHORT_NAME_FORMAT.format(0),
+    SCHOOL_PRETTY_NAME_FORMAT.format(0),
+    grade_pts=SCHOOL_GRADE_PTS,
+)
 
 
 @pytest.fixture
@@ -101,7 +118,7 @@ def term_statics() -> tuple[str, tuple[int, int], list[str]]:
         A tuple with the following in this order:
         - The name format string (takes 1 param, set to a 1-indexed int in fixtures)
         - A tuple containing the half-open range of possible random years for a test
-          term, of the form [lo, hi)
+          Term, of the form [lo, hi)
         - A list of strings that maps to the parts_of_year for all test Terms produced
           by fixtures. By default, fixture terms map to parts_of_year[0]
 
@@ -167,13 +184,11 @@ def school_statics() -> tuple[str, str, str, dict[str, float]]:
 
 @pytest.fixture
 def school() -> School:
-    """Get a single School made with the static test values."""
-    return School(
-        SCHOOL_IDENTIFIER_FORMAT.format(1),
-        SCHOOL_SHORT_NAME_FORMAT.format(1),
-        SCHOOL_PRETTY_NAME_FORMAT.format(1),
-        grade_pts=SCHOOL_GRADE_PTS,
-    )
+    """Get a single School made with the static test values.
+
+    NOTE: Formatted with all 0's to prevent id conflict in test suite.
+    """
+    return SCHOOL_0
 
 
 @pytest.fixture
@@ -181,7 +196,7 @@ def list_of_schools() -> tuple[int, list[School]]:
     """Get a list of Schools made with the static test values.
 
     Returns:
-        A tuple with the number of Schools, a list of the Schools
+        A tuple with the number of Schools, a list of School instances
 
     """
     n = int(RNG.integers(*SMALL_RANGE))
@@ -191,6 +206,82 @@ def list_of_schools() -> tuple[int, list[School]]:
             SCHOOL_SHORT_NAME_FORMAT.format(i + 1),
             SCHOOL_PRETTY_NAME_FORMAT.format(i + 1),
             grade_pts=SCHOOL_GRADE_PTS,
+        )
+        for i in range(n)
+    ]
+
+
+@pytest.fixture
+def class_statics() -> tuple[
+    str, tuple[int, int], str, str, list[str], tuple[int, int], str
+]:
+    """Return all the values/formats used to build School instances.
+
+    Returns:
+        A tuple with the following in this order:
+        - The dept format string (takes 1 param, a 1-indexed int in fixtures)
+        - A tuple containing the half-open range of possible random numbers for a test
+          Class, of the form [lo, hi)
+        - The short_desc format string (takes 1 param, a 1-indexed int in fixtures)
+        - The description format string (takes 1 param, a 1-indexed int in fixtures)
+        - A list of the grades to use with test Classes
+        - A tuple containing the half-open range of possible random hours for a test
+          Class, of the form [lo, hi)
+        - The tag format string (takes 1 param)
+
+    """
+    return (
+        CLASS_DEPT_FORMAT,
+        CLASS_NUMBER_RANGE,
+        CLASS_SHORT_DESC_FORMAT,
+        CLASS_DESCRIPTION_FORMAT,
+        CLASS_GRADES,
+        CLASS_HRS_RANGE,
+        CLASS_TAG_FORMAT,
+    )
+
+
+@pytest.fixture
+def mock_class() -> Class:
+    """Get a single Class made with the static test values."""
+    random_term = Term(
+        TERM_NAME_FORMAT.format(1),
+        int(RNG.integers(*TERM_YEAR_RANGE)),
+        TERM_PARTS_OF_YEAR[0],
+        part_of_year_names=TERM_PARTS_OF_YEAR,
+    )
+    return Class(
+        CLASS_DEPT_FORMAT.format(1),
+        int(RNG.integers(*CLASS_NUMBER_RANGE)),
+        int(RNG.integers(*CLASS_HRS_RANGE)),
+        random_term,
+        SCHOOL_0,
+    )
+
+
+@pytest.fixture
+def list_of_classes() -> tuple[int, list[Class]]:
+    """Get a list of classes made with the static test values.
+
+    The classes will all have the same school (SCHOOL_0) but a random term
+
+    Returns:
+        A tuple with the number of Classes, the list of Class instances
+
+    """
+    n = int(RNG.integers(*SMALL_RANGE))
+    return n, [
+        Class(
+            CLASS_DEPT_FORMAT.format(i + 1),
+            int(RNG.integers(*CLASS_NUMBER_RANGE)),
+            int(RNG.integers(*CLASS_HRS_RANGE)),
+            Term(
+                TERM_NAME_FORMAT.format(i + 1),
+                int(RNG.integers(*TERM_YEAR_RANGE)),
+                TERM_PARTS_OF_YEAR[0],
+                part_of_year_names=TERM_PARTS_OF_YEAR,
+            ),
+            SCHOOL_0,
         )
         for i in range(n)
     ]
