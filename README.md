@@ -12,8 +12,6 @@ a mobile app.
 
 ## To-Do List
 
-- Document the codebase more thoroughly and properly.
-- Add UV as a package manager & Ruff as a linter, and lint according to industry standard specifications
 - Add robust unit testing for every module.
 - Add disk i/o so that configurations can be saved to (probably json) files for storing state between program runs.
 - Create a web-based interface in HTML/JavaScript/CSS and a simple server to run locally so the app can be deployed.
