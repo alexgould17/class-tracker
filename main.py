@@ -1,4 +1,5 @@
 """Entrypoint for the app. Currently hardcoded with my personal data."""
+from pygments.lexer import include
 
 from school import School
 from school_class import Class
@@ -412,30 +413,33 @@ clcv231 = Class(
 alex.add_classes([cs407, cs423, cs438, cs461, clcv231])
 
 # Spring 2027 classes (planned)
-cs425 = Class(cs, 425, 4, sp27, uiuc, tags=[new, tech, major], ongoing=True)
-cs433 = Class(cs, 433, 3, sp27, uiuc, tags=[new, tech, major], ongoing=True)
-cs435 = Class(cs, 435, 3, sp27, uiuc, tags=[new, tech, major], ongoing=True)
-cs463 = Class(cs, 463, 3, sp27, uiuc, tags=[new, tech, major], ongoing=True)
+cs425 = Class(cs, 425, 4, sp27, uiuc, tags=[new, tech, major], ongoing=True, grade='A')
+cs433 = Class(cs, 433, 3, sp27, uiuc, tags=[new, tech, major], ongoing=True, grade='A')
+cs435 = Class(cs, 435, 3, sp27, uiuc, tags=[new, tech, major], ongoing=True, grade='A')
+cs463 = Class(cs, 463, 3, sp27, uiuc, tags=[new, tech, major], ongoing=True, grade='A')
 ggis106 = Class('GGIS', 106, 3, sp27, uiuc, tags=[new], ongoing=True)
+alex.add_classes([cs425, cs433, cs435, cs463, ggis106])
 
 # Print stuff/testing stuff
 total_gpa, _ = alex.calculate_total_gpa()
 predicted_gpa, _ = alex.calculate_predicted_gpa()
-technical_gpa, _ = alex.calculate_filtered_gpa(include=[tech], exclude=[])
-major_gpa, _ = alex.calculate_filtered_gpa(include=[major], exclude=[])
+technical_gpa, _ = alex.calculate_filtered_gpa(include=[tech])
+major_gpa, _ = alex.calculate_filtered_gpa(include=[major])
+predicted_major_gpa, _ = alex.calculate_filtered_gpa(include=[major], school=uiuc, use_ongoing=True)
+predicted_technical_gpa, _ = alex.calculate_filtered_gpa(include=[tech], school=uiuc, use_ongoing=True)
 
-total_gpa_new, _ = alex.calculate_filtered_gpa(include=[], exclude=[old])
-predicted_gpa_new, testlist = alex.calculate_filtered_gpa(
-    include=[], exclude=[old], use_ongoing=True
-)
+total_gpa_new, _ = alex.calculate_filtered_gpa(exclude=[old])
+predicted_gpa_new, testlist = alex.calculate_filtered_gpa(exclude=[old], use_ongoing=True)
 technical_gpa_new, _ = alex.calculate_filtered_gpa(include=[tech], exclude=[old])
 major_gpa_new, _ = alex.calculate_filtered_gpa(include=[major], exclude=[old])
 
 print(f"""
-Overall GPA:    {total_gpa:.2f}   New only: {total_gpa_new:.2f}
-Predicted GPA:  {predicted_gpa:.2f}   New only: {predicted_gpa_new:.2f}
-Major GPA:      {major_gpa:.2f}   New only: {major_gpa_new:.2f}
-Technical GPA:  {technical_gpa:.2f}   New only: {technical_gpa_new:.2f}
+Overall GPA:                {total_gpa:.2f}     New only: {total_gpa_new:.2f}
+Major GPA:                  {major_gpa:.2f}     New only: {major_gpa_new:.2f}
+Predicted GPA:              {predicted_gpa:.2f}     New only: {predicted_gpa_new:.2f}
+Technical GPA:              {technical_gpa:.2f}     New only: {technical_gpa_new:.2f}
+Predicted Major GPA (UIUC): {predicted_major_gpa:.2f}
+Predicted Tech GPA (UIUC): {predicted_technical_gpa:.2f}
 """)
 # print(csc125.to_transcript_line())
 # print('testlist: [')

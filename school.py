@@ -2,8 +2,8 @@
 
 from utilities import AlreadyExistsError
 
-MAX_SHORT_NAME_CHARS = 15
-DEFAULT_GRADE_POINTS = {
+MAX_SHORT_NAME_CHARS: int = 15
+DEFAULT_GRADE_POINTS: dict[str, float] = {
     'A+': 4.0,
     'A': 4.0,
     'A-': 3.67,
@@ -19,7 +19,7 @@ DEFAULT_GRADE_POINTS = {
     'F': 0.0,
 }
 
-_school_ids = set()
+_school_ids: set[str] = set()
 
 
 class School:
@@ -55,7 +55,7 @@ class School:
     def __init__(
         self,
         identifier: str,
-        short_name: str = '',
+        short_name: str,
         pretty_name: str = '',
         grade_pts: dict[str, float] | None = None,
     ) -> None:
@@ -66,7 +66,33 @@ class School:
         self.identifier = identifier
         self.short_name = short_name
         self.pretty_name = pretty_name
-        self.grade_pts = grade_pts if grade_pts else DEFAULT_GRADE_POINTS.copy()
+        self.grade_pts = grade_pts.copy() if grade_pts else DEFAULT_GRADE_POINTS.copy()
+
+    def __eq__(self, other: School) -> bool:
+        """Compare short_name and pretty_name lexicographically."""
+        if not isinstance(other, School):
+            raise ValueError(
+                'School object can only be compared (==) to another Class object.'
+            )
+        return (
+            self._short_name == other._short_name
+            and self._pretty_name == other._pretty_name
+        )
+
+    def __lt__(self, other: School) -> bool:
+        """Compare short_name then pretty_name lexicographically."""
+        if not isinstance(other, School):
+            raise ValueError(
+                'School object can only be compared (<) to another Class object.'
+            )
+        if self._short_name == other._short_name:
+            return self._pretty_name < other._pretty_name
+        return self._short_name < other._short_name
+
+    def __del__(self) -> None:
+        """Remove id from the global id's list on deletion."""
+        global _school_ids
+        _school_ids.remove(self.identifier)
 
     @property
     def identifier(self) -> str:
@@ -98,7 +124,7 @@ class School:
 
     @pretty_name.setter
     def pretty_name(self, value: str) -> None:
-        if value == '' or not isinstance(value, str):
+        if not isinstance(value, str):
             raise ValueError('School.pretty_name must be a non-empty string.')
         self._pretty_name = value
 
@@ -148,28 +174,3 @@ class School:
                 )
             if g in self._grade_pts:
                 del self._grade_pts[g]
-
-    def __eq__(self, other: School) -> bool:
-        """Compare short_name and pretty_name lexicographically."""
-        if not isinstance(other, School):
-            raise ValueError(
-                'School object can only be compared (==) to another Class object.'
-            )
-        return (
-            self._short_name == other._short_name
-            and self._pretty_name == other._pretty_name
-        )
-
-    def __lt__(self, other: School) -> bool:
-        """Compare short_name then pretty_name lexicographically."""
-        if not isinstance(other, School):
-            raise ValueError(
-                'School object can only be compared (<) to another Class object.'
-            )
-        if self._short_name == other._short_name:
-            return self._pretty_name < other._pretty_name
-        return self._short_name < other._short_name
-
-    def __del__(self) -> None:
-        global _school_ids
-        _school_ids.remove(self.identifier)

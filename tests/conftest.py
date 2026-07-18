@@ -1,14 +1,16 @@
 """Configurations to be used across all tests."""
 
 import secrets
+import string
+from collections.abc import Callable
 from datetime import datetime, timezone
 
 import numpy as np
 import pytest
 
 from assignment import Assignment
-from school import DEFAULT_GRADE_POINTS, School
-from school_class import Class
+from school import DEFAULT_GRADE_POINTS, School, MAX_SHORT_NAME_CHARS
+from school_class import Class, MAX_SHORT_DESC_CHARS
 from term import DEFAULT_PARTS_OF_YEAR, Term
 
 # Static test vars, all ranges are half-open unless otherwise specified
@@ -36,8 +38,9 @@ CLASS_GRADES = list(DEFAULT_GRADE_POINTS.keys())
 CLASS_HRS_RANGE = (1, 5)
 CLASS_TAG_FORMAT = 'tag {}'
 
-# Initialize the random number generator with a good random seed
+# Randomization constants
 RNG = np.random.default_rng(secrets.randbits(128))
+RAND_RANGE = (2, min(MAX_SHORT_NAME_CHARS, MAX_SHORT_DESC_CHARS))
 
 # Necessary to not have duplicate schools
 SCHOOL_0 = School(
@@ -52,6 +55,13 @@ SCHOOL_0 = School(
 def rng() -> np.random.Generator:
     """Grant access to the random number generator used by conftest."""
     return RNG
+
+
+@pytest.fixture
+def rand_str() -> Callable[[], str]:
+    def _rand_str() -> str:
+        return ''.join([chr(int(RNG.integers(97, 123))) for _ in range(*RAND_RANGE)])
+    return _rand_str
 
 
 @pytest.fixture
