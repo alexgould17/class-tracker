@@ -9,6 +9,8 @@ from school import School
 from term import Term
 from utilities import CyclicalError
 
+MAX_SHORT_DESC_CHARS = 25
+
 
 class Class:
     """class representing a single Class that a user takes in school.
@@ -68,7 +70,7 @@ class Class:
     _prereqs: list[Class]
     _postreqs: list[Class]
 
-    grade_pattern = re.compile('[A-Z][+-]?')
+    grade_pattern = re.compile(r'([A-Z][+-]?)?')
 
     def __init__(
         self,
@@ -78,7 +80,7 @@ class Class:
         term: Term,
         school: School,
         *,
-        tags: list[str] | None,
+        tags: list[str] | None = None,
         ongoing: bool = False,
         grade: str = '',
         short_desc: str = '',
@@ -95,8 +97,8 @@ class Class:
         self.hrs = hrs
         self.school = school
         self.tags = tags if tags else []
-        self.ongoing = ongoing
         self.grade = grade
+        self.ongoing = ongoing
         self.assignments = []
         self.assign_cats = []
         self.prereqs = []
@@ -111,7 +113,7 @@ class Class:
 
     @dept.setter
     def dept(self, value: str) -> None:
-        if type(value) is not str or value == '':
+        if not isinstance(value, str) or value == '':
             raise ValueError('Class.dept must be a non-empty string')
         self._dept = value
 
@@ -121,7 +123,7 @@ class Class:
 
     @number.setter
     def number(self, value: int) -> None:
-        if type(value) is not int:
+        if not isinstance(value, int):
             raise ValueError('Class.number must be an int')
         self._number = value
 
@@ -131,9 +133,9 @@ class Class:
 
     @short_desc.setter
     def short_desc(self, value: str) -> None:
-        if type(value) is not str:
+        if not isinstance(value, str):
             raise ValueError('Class.short_desc must be a string')
-        self._short_desc = value[:25]
+        self._short_desc = value[:MAX_SHORT_DESC_CHARS]
 
     @property
     def description(self) -> str:
@@ -141,7 +143,7 @@ class Class:
 
     @description.setter
     def description(self, value: str) -> None:
-        if type(value) is not str:
+        if not isinstance(value, str):
             raise ValueError('Class.description must be a string')
         self._description = value
 
@@ -151,7 +153,7 @@ class Class:
 
     @grade.setter
     def grade(self, value: str) -> None:
-        if type(value) is not str or not re.match(self.grade_pattern, value):
+        if not isinstance(value, str) or not re.match(self.grade_pattern, value):
             raise ValueError(
                 f'Class.grade must be a string of format "{self.grade_pattern.pattern}"'
             )
@@ -168,7 +170,7 @@ class Class:
 
     @hrs.setter
     def hrs(self, value: int) -> None:
-        if type(value) is not int:
+        if not isinstance(value, int):
             raise ValueError('Class.hrs must be an int')
         self._hrs = value
 
@@ -178,7 +180,7 @@ class Class:
 
     @term.setter
     def term(self, value: Term) -> None:
-        if type(value) is not Term:
+        if not isinstance(value, Term):
             raise ValueError('Class.term must be a Term')
         self._term = value
 
@@ -188,7 +190,7 @@ class Class:
 
     @school.setter
     def school(self, value: School) -> None:
-        if type(value) is not School:
+        if not isinstance(value, School):
             raise ValueError('Class.school must be a School')
         self._school = value
 
@@ -198,7 +200,7 @@ class Class:
 
     @ongoing.setter
     def ongoing(self, value: bool) -> None:
-        if type(value) is not bool:
+        if not isinstance(value, bool):
             raise ValueError('Class.ongoing must be a bool')
         self._ongoing = value
 
@@ -208,10 +210,10 @@ class Class:
 
     @tags.setter
     def tags(self, value: list[str]) -> None:
-        if type(value) is not list:
+        if not isinstance(value, list):
             raise ValueError('Class.tags must be a list')
         for s in value:
-            if type(s) is not str:
+            if not isinstance(s, str):
                 raise ValueError('Class.tags must be a list of strings')
         self._tags = value
 
@@ -221,10 +223,10 @@ class Class:
 
     @assignments.setter
     def assignments(self, value: list[Assignment]) -> None:
-        if type(value) is not list:
+        if not isinstance(value, list):
             raise ValueError('Class.assignments must be a list')
         for a in value:
-            if type(a) is not Assignment:
+            if not isinstance(a, Assignment):
                 raise ValueError('Class.tags must be a list of Assignments')
         self._assignments = value
 
@@ -234,10 +236,10 @@ class Class:
 
     @assign_cats.setter
     def assign_cats(self, value: list[str]) -> None:
-        if type(value) is not list:
+        if not isinstance(value, list):
             raise ValueError('Class.assign_cats must be a list')
         for s in value:
-            if type(s) is not str:
+            if not isinstance(s, str):
                 raise ValueError('Class.assign_cats must be a list of strings')
         self._assign_cats = value
 
@@ -247,10 +249,10 @@ class Class:
 
     @prereqs.setter
     def prereqs(self, value: list[Class]) -> None:
-        if type(value) is not list:
+        if not isinstance(value, list):
             raise ValueError('Class.prereqs must be a list')
         for c in value:
-            if type(c) is not Class:
+            if not isinstance(c, Class):
                 raise ValueError('Class.tags must be a list of Class objects')
         self._prereqs = value
 
@@ -260,10 +262,10 @@ class Class:
 
     @postreqs.setter
     def postreqs(self, value: list[Class]) -> None:
-        if type(value) is not list:
+        if not isinstance(value, list):
             raise ValueError('Class.prereqs must be a list')
         for c in value:
-            if type(c) is not Class:
+            if not isinstance(c, Class):
                 raise ValueError('Class.tags must be a list of Class objects')
         self._postreqs = value
 
@@ -306,8 +308,8 @@ class Class:
         return ''.join(strs)
 
     def __lt__(self, other: Class) -> bool:
-        """Compare by dept first, then number, then year, then semester."""
-        if type(self) is not Class or type(other) is not Class:
+        """Compare by dept first, then number, then term."""
+        if not isinstance(self, Class) or not isinstance(other, Class):
             raise ValueError(
                 'Class object can only be compared (<) to another Class object.'
             )
@@ -319,11 +321,15 @@ class Class:
 
     def __eq__(self, other: Class) -> bool:
         """Two Classes are equal iff their dept, number, and term are the same."""
-        if type(self) is not Class or type(other) is not Class:
+        if not isinstance(self, Class) or not isinstance(other, Class):
             raise ValueError(
                 'Class object can only be compared (==) to another Class object.'
             )
-        return self.dept == other.dept and self.number == other.number
+        return (
+            self.dept == other.dept
+            and self.number == other.number
+            and self.term == other.term
+        )
 
     def __str__(self) -> str:
         """Return a simple string with the dept and number."""

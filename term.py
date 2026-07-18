@@ -66,7 +66,7 @@ class Term:
 
     @name.setter
     def name(self, value: str) -> None:
-        if type(value) is not str or value == '':
+        if not isinstance(value, str) or value == '':
             raise ValueError('Term.name must be a non-empty string.')
         self._name = value
 
@@ -76,7 +76,7 @@ class Term:
 
     @year.setter
     def year(self, value: int) -> None:
-        if type(value) is not int or value < 0:
+        if not isinstance(value, int) or value < 0:
             raise ValueError('Term.year must be a non-negative integer.')
         self._year = value
 
@@ -86,10 +86,13 @@ class Term:
 
     @part_of_year.setter
     def part_of_year(self, value: str) -> None:
-        if type(value) is not str or value == '':
+        if not isinstance(value, str) or value == '':
             raise ValueError('Term.part_of_year must be a non-empty string.')
         self._part_of_year = value
-        self._part_of_year_index = self._part_of_year_names.index(self._part_of_year)
+        if value in self.part_of_year_names:
+            self._part_of_year_index = self._part_of_year_names.index(value)
+        else:
+            self._part_of_year_index = -1
 
     @property
     def part_of_year_index(self) -> int:
@@ -97,7 +100,7 @@ class Term:
 
     @part_of_year_index.setter
     def part_of_year_index(self, value: int) -> None:
-        if type(value) is not int or value < 0:
+        if not isinstance(value, int):
             raise ValueError('Term.part_of_year_index must be an integer.')
         self._part_of_year_index = value
 
@@ -107,11 +110,13 @@ class Term:
 
     @part_of_year_names.setter
     def part_of_year_names(self, value: list[str]) -> None:
-        if type(value) is not list or not value:
-            raise ValueError('Term.term_names must be a non-empty list.')
+        if not isinstance(value, list) or not value:
+            raise ValueError('Term.part_of_year_names must be a non-empty list.')
         for s in value:
-            if type(s) is not str:
-                raise ValueError('Term.term_names must be a list of strings.')
+            if not isinstance(s, str) or s == '':
+                raise ValueError(
+                    'Term.part_of_year_names must be a list of non-empty strings.'
+                )
         self._part_of_year_names = value
 
     def __str__(self) -> str:
@@ -132,7 +137,7 @@ class Term:
         indices (when years are even). Otherwise, defaults to lexicographic ordering of
         the string value of part_of_year.
         """
-        if type(self) is not Term or type(other) is not Term:
+        if not isinstance(other, Term):
             raise ValueError(
                 'Term object can only be compared (<) to another Term object.'
             )
@@ -144,9 +149,9 @@ class Term:
 
     def __eq__(self, other: Term) -> bool:
         """Two terms are equal iff their names, years & part_of_years are equal."""
-        if type(self) is not Term or type(other) is not Term:
+        if not isinstance(other, Term):
             raise ValueError(
-                'Term object can only be compared (<) to another Term object.'
+                'Term object can only be compared (==) to another Term object.'
             )
         return (
             self.year == other.year

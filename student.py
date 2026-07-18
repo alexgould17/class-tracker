@@ -142,8 +142,9 @@ class Student:
     def calculate_filtered_gpa(
         self,
         *,
-        include: list[str] | None,
-        exclude: list[str] | None,
+        include: list[str] | None = None,
+        exclude: list[str] | None = None,
+        school: School | None = None,
         use_ongoing: bool = False,
     ) -> tuple[float, list[Class]]:
         """Calculate the Student's GPA using a custom filter.
@@ -173,6 +174,9 @@ class Student:
                 for tag in exclude:
                     if tag in c.tags:
                         return False
+            if school:
+                if not c.school == school:
+                    return False
             return True
 
         return self.calculate_gpa(filter_func)
